@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CycleScout AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./src/style.css" />
+</head>
+
+<body>
+    <!-- App Container -->
+    <div id="app">
+        <!-- Header -->
+        <header class="navbar">
+            <div class="logo">CycleScout AI</div>
+            <nav>
+                <button id="nav-scanner" class="active">Scanner</button>
+                <button id="nav-board">Scrap Board</button>
+            </nav>
+        </header>
+
+        <!-- Main Content Area -->
+        <main id="main-content">
+
+            <!-- --- Landing / Scanner View --- -->
+            <section id="view-scanner" class="view active">
+                <div class="hero">
+                    <h1>Turn Trash into Resources</h1>
+                    <p>Scan any broken or unwanted item. CycleScout AI will instantly provide repair guides, upcycling
+                        ideas, or help you list it on the community Scrap Board.</p>
+                </div>
+
+                <div class="scanner-card glassmorphism">
+                    <div class="upload-area" id="upload-area">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="upload-icon">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <p>Click to upload or take a photo</p>
+                        <input type="file" id="image-input" accept="image/*" style="display: none;" />
+                    </div>
+                    <div id="loading-state" class="hidden">
+                        <div class="spinner"></div>
+                        <p>Analyzing item...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- --- Triage Results View --- -->
+            <section id="view-results" class="view hidden">
+                <div class="results-header">
+                    <div>
+                        <button id="btn-back" class="btn text-btn mb-1">&larr; Back to Scanner</button>
+                        <h2 id="res-item-name">Loading...</h2>
+                        <div id="model-refine-container" class="mt-1">
+                            <p class="text-light" style="font-size: 0.85rem">Is the product model incorrect?</p>
+                            <div style="display: flex; gap: 0.5rem; margin-top: 0.25rem;">
+                                <input type="text" id="refine-model-input" placeholder="Enter true product model..."
+                                    class="input-field" style="padding: 0.5rem; font-size: 0.9rem;">
+                                <button id="btn-refine" class="btn secondary sm" style="white-space: nowrap;">Refine
+                                    Details</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="results-content">
+                    <div class="card section-card">
+                        <h3>Materials Found</h3>
+                        <ul id="res-materials" class="pill-list"></ul>
+                    </div>
+
+                    <div class="card section-card outline-card">
+                        <h3>Upcycle Ideas</h3>
+                        <ul id="res-ideas" class="bullet-list"></ul>
+                    </div>
+                </div>
+
+                <div class="video-container card section-card">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="margin-bottom: 0;">Repair Tutorials</h3>
+                        <div class="score-badge">Repair Score: <span id="res-score">-</span>/10</div>
+                    </div>
+                    <div id="video-carousel" class="carousel">
+                        <button id="btn-prev-video" class="carousel-btn">&larr;</button>
+                        <div id="video-wrapper" class="aspect-video">
+                            <div class="placeholder-video">Loading videos...</div>
+                        </div>
+                        <button id="btn-next-video" class="carousel-btn">&rarr;</button>
+                    </div>
+                    <div id="video-counter" class="text-center text-light mt-1" style="font-size: 0.85rem;"></div>
+                </div>
+
+                <div id="action-buttons" class="actions mt-2">
+                    <button id="btn-done" class="btn primary">I'm Fixing This!</button>
+                    <button id="btn-scrap-intent" class="btn secondary">List on Scrap Board</button>
+                </div>
+
+                <!-- Scrap Listing Form -->
+                <div id="scrap-form-container" class="hidden card section-card mt-2 border-primary">
+                    <h3>List as Scrap</h3>
+                    <p class="text-light mb-1">Make these materials available for someone else's project.</p>
+                    <input type="text" id="scrap-location" placeholder="e.g. Engineering Block Foyer"
+                        class="input-field mb-1">
+                    <input type="text" id="scrap-contact" placeholder="Email or Phone (optional)"
+                        class="input-field mb-1">
+                    <button id="btn-submit-scrap" class="btn primary full-width">Submit to Community Board</button>
+                    <div id="scrap-status" class="mt-1 text-center hidden"></div>
+                </div>
+            </section>
+
+            <!-- --- Scrap Board View --- -->
+            <section id="view-board" class="view hidden">
+                <div class="board-header">
+                    <h2>Community Scrap Board</h2>
+                    <button id="btn-refresh-board" class="btn secondary sm">Refresh</button>
+                </div>
+                <p class="text-light mb-2">Claim materials listed by others in your community.</p>
+
+                <div id="board-loading" class="text-center py-2 hidden">
+                    <div class="spinner"></div>
+                    <p>Loading items...</p>
+                </div>
+
+                <div id="board-empty" class="text-center py-2 hidden">
+                    <p class="text-light">No items have been listed yet.</p>
+                </div>
+
+                <div class="grid" id="scrap-grid">
+                    <!-- Will be dynamically populated -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Floating Chat Widget -->
+        <div id="chat-widget" class="hidden">
+            <div id="repair-chat-container" class="chat-popup hidden">
+                <div class="chat-header" id="chat-header-toggle">
+                    <h3>Repair Assistant</h3>
+                    <button id="btn-close-chat" class="btn text-btn sm" title="Close chat">&times;</button>
+                </div>
+                <div class="chat-body" id="chat-body">
+                    <p class="mb-1" style="font-size:0.85rem; color: #4B5563;">Chat with AI for specific troubleshooting
+                        steps or new video suggestions.</p>
+                    <div id="chat-history" class="chat-history mb-1"></div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="chat-input" placeholder="Ask about the repair..." class="input-field">
+                        <button id="btn-send-chat" class="btn primary">Send</button>
+                    </div>
+                </div>
+            </div>
+            <button id="btn-chat-toggle" class="chat-fab">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+    <script type="module" src="./src/main.js"></script>
+</body>
+
+</html>
