@@ -210,7 +210,7 @@ function populateResultsUI(data) {
 
   formContainer.classList.add('hidden');
   scrapStatus.classList.add('hidden');
-  chatWidget.classList.add('hidden');
+  chatWidget.classList.remove('hidden');
   chatContainer.classList.add('hidden');
   btnChatToggle.classList.remove('hidden');
   chatBody.classList.remove('collapsed');
@@ -308,7 +308,8 @@ btnCloseChat.addEventListener('click', (e) => {
 });
 
 chatHeaderToggle.addEventListener('click', () => {
-  chatBody.classList.toggle('collapsed');
+  chatContainer.classList.add('hidden');
+  btnChatToggle.classList.remove('hidden');
 });
 
 btnChatToggle.addEventListener('click', () => {
@@ -341,8 +342,8 @@ btnSendChat.addEventListener('click', async () => {
 
   // Create loading element
   const loadingDiv = document.createElement('div');
-  loadingDiv.className = 'chat-msg assistant text-light';
-  loadingDiv.textContent = 'Thinking...';
+  loadingDiv.className = 'chat-msg assistant text-light loading-dots';
+  loadingDiv.textContent = '...';
   chatHistory.appendChild(loadingDiv);
   chatHistory.scrollTop = chatHistory.scrollHeight;
 
@@ -372,6 +373,13 @@ btnSendChat.addEventListener('click', async () => {
 
   btnSendChat.disabled = false;
   chatInput.focus();
+});
+
+chatInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    btnSendChat.click();
+  }
 });
 
 btnScrapIntent.addEventListener('click', () => {
@@ -429,7 +437,8 @@ btnSubmitScrap.addEventListener('click', async () => {
     product_model: state.currentAnalysis?.product_model || "Generic", // Added Product Model
     materials: (state.currentAnalysis?.primary_materials || []).join(', '),
     location: loc,
-    contact: contact
+    contact: contact,
+    image_base64: state.currentBase64
   };
 
   try {

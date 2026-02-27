@@ -594,6 +594,24 @@ main {
   transition: all var(--transition-normal);
 }
 
+@media (max-width: 640px) {
+  .chat-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    z-index: 200;
+  }
+
+  .chat-body {
+    height: 100%;
+    max-height: 100%;
+    flex: 1;
+  }
+}
+
 .chat-header {
   background-color: var(--color-primary);
   color: white;
@@ -683,4 +701,20 @@ main {
   align-self: center;
   border: none;
   padding: 0.25rem;
+}
+
+.loading-dots {
+  font-size: 1.25rem;
+  letter-spacing: 2px;
+  animation: flash 1s infinite alternate;
+}
+
+@keyframes flash {
+  0% {
+    opacity: 0.4;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }

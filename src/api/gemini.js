@@ -100,28 +100,28 @@ You MUST respond with a STRICT JSON object:
     // Build the contents array
     const contents = [];
 
-    // We append the system context to the first message
-    if (chatHistory.length === 0) {
+    // Always start with a user message to provide context and initiate the chat history correctly for Gemini
+    contents.push({
+        role: "user",
+        parts: [{ text: systemContext + "\nHello, I am ready to fix my item." }]
+    });
+
+    // Rebuild history safely
+    chatHistory.forEach(msg => {
+        // Role must be "user" or "model"
+        const apiRole = msg.role === 'user' ? 'user' : 'model';
+        const msgText = msg.role === 'user' ? msg.text : JSON.stringify({ reply: msg.text, refined_youtube_query: null });
         contents.push({
-            role: "user",
-            parts: [{ text: systemContext + "\nUser Message: " + userMessage }]
+            role: apiRole,
+            parts: [{ text: msgText }]
         });
-    } else {
-        // Rebuild history safely
-        chatHistory.forEach(msg => {
-            // Role must be "user" or "model"
-            const apiRole = msg.role === 'user' ? 'user' : 'model';
-            contents.push({
-                role: apiRole,
-                parts: [{ text: msg.role === 'model' ? JSON.stringify({ reply: msg.text, refined_youtube_query: null }) : msg.text }]
-            });
-        });
-        // Add new message with context reminder
-        contents.push({
-            role: "user",
-            parts: [{ text: "[Context reminder: Keep responding in JSON format as defined earlier]\nUser Message: " + userMessage }]
-        });
-    }
+    });
+
+    // Add new message with context reminder
+    contents.push({
+        role: "user",
+        parts: [{ text: "[Context reminder: Keep responding in JSON format with 'reply' and 'refined_youtube_query' keys]\nUser Message: " + userMessage }]
+    });
 
     const payload = {
         contents: contents,
