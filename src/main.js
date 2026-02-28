@@ -490,6 +490,16 @@ async function loadScrapBoard() {
       const card = document.createElement('div');
       card.className = 'card scrap-item';
 
+      // Display item image if available
+      if (item.image_base64) {
+        const img = document.createElement('img');
+        img.className = 'scrap-item-img';
+        // If the base64 already has the data URI prefix, use it directly; otherwise add one
+        img.src = item.image_base64.startsWith('data:') ? item.image_base64 : `data:image/jpeg;base64,${item.image_base64}`;
+        img.alt = item.item_name || "Scrap item image";
+        card.appendChild(img);
+      }
+
       const title = document.createElement('h3');
       title.textContent = item.item_name || "Unknown Item";
 

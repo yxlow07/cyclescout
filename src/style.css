@@ -463,6 +463,15 @@ main {
   transition: transform var(--transition-fast);
 }
 
+.scrap-item-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  margin-bottom: 0.75rem;
+  background-color: var(--color-background);
+}
+
 .scrap-item:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow-lg);
